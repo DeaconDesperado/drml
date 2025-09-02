@@ -2,7 +2,7 @@ use super::function::{FunctionMap, Input, ReturnMap};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
-    RDFNodeConstant {
+    Constant {
         constant: String,
     },
     Template {
@@ -23,7 +23,7 @@ impl Expression {
     /// See <https://kg-construct.github.io/rml-core/spec/docs/#dfn-reference-expression>
     pub fn references(&self) -> Vec<String> {
         match self {
-            Expression::RDFNodeConstant { .. } => Vec::new(),
+            Expression::Constant { .. } => Vec::new(),
             Expression::Template { template } => extract_template_references(template),
             Expression::Reference { reference } => vec![reference.clone()],
             Expression::FunctionExecution { .. } => Vec::new(), // Functions don't have direct references

@@ -14,3 +14,4 @@ oxrdf = { version = "0.2.4", features = ["oxsdatatypes", "rdf-star"] }
 oxrdfio = { version = "0.1.8", features = ["rdf-star"] }
 oxttl = { version = "0.1.8", features = ["rdf-star"] }
 serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0.16"

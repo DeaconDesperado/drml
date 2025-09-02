@@ -127,6 +127,7 @@ dependencies = [
  "oxrdfio",
  "oxttl",
  "serde",
+ "thiserror",
 ]
 
 [[package]]

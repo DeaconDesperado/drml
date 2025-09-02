@@ -1,8 +1,16 @@
 use clap::{Parser, ValueEnum};
 use env_logger::{Builder, Env};
 use log;
-use oxrdfio::{JsonLdProfileSet, RdfFormat};
-use std::path::PathBuf;
+use oxiri::IriParseError;
+use oxrdf::Dataset;
+use oxrdfio::{JsonLdProfileSet, RdfFormat, RdfParseError, RdfParser, RdfSerializer};
+use parse::RmlMappingParser;
+use std::{
+    fs::File,
+    io::{self, Write},
+    path::PathBuf,
+};
+use thiserror::Error;
 
 pub mod model;
 pub mod parse;
@@ -30,9 +38,9 @@ impl Default for OutputFormat {
     }
 }
 
-impl OutputFormat {
-    fn to_rdf_format(self) -> RdfFormat {
-        match self {
+impl From<OutputFormat> for RdfFormat {
+    fn from(value: OutputFormat) -> Self {
+        match value {
             OutputFormat::Turtle => RdfFormat::Turtle,
             OutputFormat::Nt => RdfFormat::NTriples,
             OutputFormat::Nq => RdfFormat::NQuads,
@@ -76,8 +84,42 @@ pub struct RmlCommand {
     pub base_iri: Option<String>,
 }
 
+#[derive(Error, Debug)]
+pub enum RmlError {
+    #[error("Could determine format for file: no extension")]
+    NoFileExtension(),
+    #[error("Could determine format for file `{0}` extension `{0}`")]
+    UnknownMappingFileType(String, String),
+    #[error("Output file not availble")]
+    OutputUnavailable(#[from] io::Error),
+    #[error("Invalid mapping file")]
+    InvalidMapping(#[from] RdfParseError),
+    #[error("Invalid base IRI")]
+    InvalidBaseIri(#[from] IriParseError),
+}
+
+fn mapping_format_from_ext(path: &PathBuf) -> Result<RdfFormat, RmlError> {
+    if let Some(path_str) = path.to_str() {
+        match path.extension().and_then(|ext| ext.to_str()) {
+            Some("ttl") => Ok(RdfFormat::Turtle),
+            Some("nq") | Some("nquads") => Ok(RdfFormat::NQuads),
+            Some(e) => Err(RmlError::UnknownMappingFileType(
+                path_str.to_string(),
+                e.to_string(),
+            )),
+            None => Err(RmlError::NoFileExtension()),
+        }
+    } else {
+        Err(RmlError::NoFileExtension())
+    }
+}
+
+fn write<W: Write>(writer: W, format: RdfFormat, dataset: Dataset) -> Result<i32, RmlError> {
+    Ok(0)
+}
+
 impl RmlCommand {
-    pub fn run(&self) -> Result<i32, Box<dyn std::error::Error>> {
+    pub fn run(&self) -> Result<i32, RmlError> {
         // TODO: Implement RML processing logic here
         // This would include:
         // 1. Parse the mapping file
@@ -85,20 +127,23 @@ impl RmlCommand {
         // 3. Generate RDF data
         // 4. Output to file or stdout based on format
 
+        let mapping_format = mapping_format_from_ext(&self.mapping_file)?;
+        log::info!("Reading mapping file with format: {}", mapping_format);
+        let mapping_parser =
+            RdfParser::from_format(mapping_format).for_reader(File::open(&self.mapping_file)?);
+
+        let quads = mapping_parser.collect::<Result<Vec<_>, _>>()?;
+        let mut mapping_dataset = Dataset::new();
+        mapping_dataset.extend(quads);
+
         log::info!("Processing RML mapping: {:?}", self.mapping_file);
         log::info!("Output format: {:?}", self.format);
-
-        if let Some(output_file) = &self.output_file {
-            log::info!("Output file: {:?}", output_file);
-        } else {
-            log::info!("Output to stdout");
+        let rml_parser = RmlMappingParser::new(mapping_dataset, self.mapping_file.to_owned());
+        let output_dataset = Dataset::new();
+        match &self.output_file {
+            Some(path) => write(File::create(path)?, self.format.into(), output_dataset),
+            None => write(io::stdout(), self.format.into(), output_dataset),
         }
-
-        if let Some(base_iri) = &self.base_iri {
-            log::info!("Base IRI: {}", base_iri);
-        }
-
-        Ok(0)
     }
 }
 
