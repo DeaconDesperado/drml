@@ -4,6 +4,7 @@ use log;
 use oxrdfio::{JsonLdProfileSet, RdfFormat};
 use std::path::PathBuf;
 
+pub mod model;
 pub mod parse;
 pub mod process;
 

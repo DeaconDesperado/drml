@@ -1,5 +1,4 @@
 use oxrdf::Dataset;
-use std::path::Path;
 
 pub struct RmlMappingParser {
     dataset: Dataset,

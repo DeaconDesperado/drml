@@ -120,10 +120,12 @@ dependencies = [
  "clap",
  "env_logger",
  "log",
+ "oxiri",
  "oxjsonld",
  "oxrdf",
  "oxrdfio",
  "oxttl",
+ "serde",
 ]
 
 [[package]]
