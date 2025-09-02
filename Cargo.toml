@@ -1,0 +1,13 @@
+[package]
+name = "drml"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+env_logger = "0.11.8"
+log = "0.4.27"
+oxjsonld = "0.1.0"
+oxrdf = { version = "0.2.4", features = ["oxsdatatypes", "rdf-star"] }
+oxrdfio = { version = "0.1.8", features = ["rdf-star"] }
+oxttl = { version = "0.1.8", features = ["rdf-star"] }
