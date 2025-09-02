@@ -7,6 +7,7 @@ use std::path::PathBuf;
 pub mod model;
 pub mod parse;
 pub mod process;
+pub mod vocab;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum OutputFormat {

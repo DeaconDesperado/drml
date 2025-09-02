@@ -1,7 +1,8 @@
-use serde::{Deserialize, Serialize};
+use oxrdf::NamedNode;
 use std::collections::{HashMap, HashSet};
 
 use super::expression::Expression;
+use crate::vocab::rml;
 
 pub trait RmlIteration {
     fn get_values_for(&self, reference: &str) -> Vec<String>;
@@ -13,43 +14,43 @@ pub trait Gatherable {
     fn get_gather_map(&self) -> Option<GatherMapMixin>;
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct GatherMapMixin {
     // Placeholder for gather map functionality
     // This would be implemented based on specific gather map requirements
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct FunctionMap {
     pub expression: Expression,
-    pub term_type: String, // Always IRI for function maps
+    pub term_type: NamedNode, // Always IRI for function maps
 }
 
 impl FunctionMap {
     pub fn new(expression: Expression) -> Self {
         Self {
             expression,
-            term_type: "http://www.w3.org/ns/r2rml#IRI".to_string(),
+            term_type: NamedNode::new_unchecked(rml::TermType::IRI),
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ParameterMap {
     pub expression: Expression,
-    pub term_type: String, // Always IRI for parameter maps
+    pub term_type: NamedNode, // Always IRI for parameter maps
 }
 
 impl ParameterMap {
     pub fn new(expression: Expression) -> Self {
         Self {
             expression,
-            term_type: "http://www.w3.org/ns/r2rml#IRI".to_string(),
+            term_type: NamedNode::new_unchecked(rml::TermType::IRI),
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct InputValueMap {
     pub expression: Expression,
     pub term_type: String,
@@ -57,7 +58,7 @@ pub struct InputValueMap {
     pub language_map: Option<LanguageMap>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct DatatypeMap {
     pub expression: Expression,
 }
@@ -68,7 +69,7 @@ impl DatatypeMap {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct LanguageMap {
     pub expression: Expression,
 }
@@ -79,22 +80,22 @@ impl LanguageMap {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ReturnMap {
     pub expression: Expression,
-    pub term_type: String, // Always IRI for return maps
+    pub term_type: NamedNode, // Always IRI for return maps
 }
 
 impl ReturnMap {
     pub fn new(expression: Expression) -> Self {
         Self {
             expression,
-            term_type: "http://www.w3.org/ns/r2rml#IRI".to_string(),
+            term_type: NamedNode::new_unchecked(rml::TermType::IRI),
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Input {
     pub parameter_map: ParameterMap,
     pub input_value_map: InputValueMap,
@@ -109,7 +110,7 @@ impl Input {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Return {
     pub returns: HashMap<String, String>,
     pub default_value: Option<String>,
@@ -136,7 +137,7 @@ impl Return {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RMLFunction {
     // Placeholder for RML function definitions
     pub uri: String,

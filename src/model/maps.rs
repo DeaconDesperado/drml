@@ -1,49 +1,29 @@
-use serde::{Deserialize, Serialize};
+use oxrdf::NamedNode;
 
 use super::expression::Expression;
 use super::function::{DatatypeMap, GatherMapMixin, Gatherable, LanguageMap};
 use super::ExpressionMap;
+use crate::vocab::rml;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct TermMap {
-    pub expression: Expression,
-    pub term_type: String,
-}
-
-impl TermMap {
-    pub fn new(expression: Expression, term_type: String) -> Self {
-        Self {
-            expression,
-            term_type,
-        }
-    }
-}
-
-impl Gatherable for TermMap {
-    fn get_gather_map(&self) -> Option<GatherMapMixin> {
-        None
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PredicateMap {
     pub expression: Expression,
-    pub term_type: String, // Always IRI for predicate maps
+    pub term_type: NamedNode, // Always IRI for predicate maps
 }
 
 impl PredicateMap {
     pub fn new(expression: Expression) -> Self {
         Self {
             expression,
-            term_type: "http://www.w3.org/ns/r2rml#IRI".to_string(),
+            term_type: NamedNode::new_unchecked(rml::TermType::IRI),
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ObjectMap {
     pub expression: Expression,
-    pub term_type: String,
+    pub term_type: NamedNode,
     pub datatype_map: Option<DatatypeMap>,
     pub language_map: Option<LanguageMap>,
     pub gather_map: Option<GatherMapMixin>,
@@ -52,17 +32,17 @@ pub struct ObjectMap {
 impl ObjectMap {
     pub fn new(
         expression: Expression,
-        term_type: String,
+        term_type_iri: String,
         datatype_map: Option<DatatypeMap>,
         language_map: Option<LanguageMap>,
         gather_map: Option<GatherMapMixin>,
     ) -> Self {
         Self {
-            expression,
-            term_type,
-            datatype_map,
-            language_map,
-            gather_map,
+            expression: expression,
+            term_type: NamedNode::new_unchecked(term_type_iri),
+            datatype_map: datatype_map,
+            language_map: language_map,
+            gather_map: gather_map,
         }
     }
 }
@@ -73,25 +53,25 @@ impl Gatherable for ObjectMap {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct GraphMap {
     pub expression: Expression,
-    pub term_type: String,
+    pub term_type: NamedNode,
 }
 
 impl GraphMap {
-    pub fn new(expression: Expression, term_type: String) -> Self {
+    pub fn new(expression: Expression, term_type_iri: String) -> Self {
         Self {
             expression,
-            term_type,
+            term_type: NamedNode::new_unchecked(term_type_iri),
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct SubjectMap {
     pub expression: Expression,
-    pub term_type: String,
+    pub term_type: NamedNode,
     pub classes: Vec<String>,
     pub graph_maps: Vec<GraphMap>,
     pub gather_map: Option<GatherMapMixin>,
@@ -100,14 +80,14 @@ pub struct SubjectMap {
 impl SubjectMap {
     pub fn new(
         expression: Expression,
-        term_type: String,
+        term_type_iri: String,
         classes: Vec<String>,
         graph_maps: Vec<GraphMap>,
         gather_map: Option<GatherMapMixin>,
     ) -> Self {
         Self {
             expression,
-            term_type,
+            term_type: NamedNode::new_unchecked(term_type_iri),
             classes,
             graph_maps,
             gather_map,
@@ -121,7 +101,7 @@ impl Gatherable for SubjectMap {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct JoinCondition {
     pub parent_map: ExpressionMap,
     pub child_map: ExpressionMap,
@@ -136,7 +116,7 @@ impl JoinCondition {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ReferencingObjectMap {
     pub uri: Option<String>,
     pub parent_uri: String,
@@ -173,7 +153,7 @@ impl Gatherable for ReferencingObjectMap {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PredicateObjectMap {
     pub uri: Option<String>,
     pub predicate_maps: Vec<PredicateMap>,

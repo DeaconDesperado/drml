@@ -7,6 +7,7 @@ edition = "2024"
 clap = { version = "4.5", features = ["derive"] }
 env_logger = "0.11.8"
 log = "0.4.27"
+once_cell = "1.19"
 oxiri = "0.2.4"
 oxjsonld = "0.1.0"
 oxrdf = { version = "0.2.4", features = ["oxsdatatypes", "rdf-star"] }

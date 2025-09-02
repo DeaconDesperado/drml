@@ -1,8 +1,6 @@
-use serde::{Deserialize, Serialize};
-
 use super::function::{FunctionMap, Input, ReturnMap};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
     RDFNodeConstant {
         constant: String,
@@ -65,7 +63,7 @@ fn extract_template_references(template: &str) -> Vec<String> {
     references
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ExpressionMap {
     pub expression: Expression,
 }

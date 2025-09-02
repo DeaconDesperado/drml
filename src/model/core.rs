@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
 use super::maps::{PredicateObjectMap, SubjectMap};
@@ -7,7 +6,7 @@ pub trait LogicalSource {
     fn get_nulls(&self) -> HashSet<String>;
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TriplesMap {
     pub uri: String,
     pub logical_source: LogicalSourceType,
@@ -15,7 +14,7 @@ pub struct TriplesMap {
     pub predicate_object_maps: Vec<PredicateObjectMap>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum LogicalSourceType {
     File(FileLogicalSource),
     Database(DatabaseLogicalSource),
@@ -84,7 +83,7 @@ impl TriplesMap {
 }
 
 // Basic logical source implementations
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct FileLogicalSource {
     pub source: String,
     pub reference_formulation: Option<String>,
@@ -98,7 +97,7 @@ impl LogicalSource for FileLogicalSource {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct DatabaseLogicalSource {
     pub source: String,
     pub query: Option<String>,
